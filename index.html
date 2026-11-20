@@ -1,0 +1,2413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GDG Girona Attendee Survey</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --surface-subtle: #F1F5F9;
+      --ink: #0F172A;
+      --ink-muted: #475569;
+      --border: #CBD5E1;
+      --g-blue: #4285F4;
+      --g-red: #EA4335;
+      --g-yellow: #FBBC05;
+      --g-green: #34A853;
+      --active-accent: #4285F4;
+      --active-soft: #EFF6FF;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --shadow-card: 0 10px 30px -10px rgba(15, 23, 42, 0.08), 0 0 0 1.5px #0F172A;
+      --shadow-btn: 0 4px 0 #0F172A;
+      --shadow-btn-sm: 0 3px 0 #0F172A;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      background-image:
+        linear-gradient(to right, rgba(66, 133, 244, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(66, 133, 244, 0.06) 1px, transparent 1px);
+      background-size: 28px 28px;
+      color: var(--ink);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    .display-font {
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: -0.02em;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Top Bar (Always visible for language toggle) */
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(248, 250, 252, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(15, 23, 42, 0.1);
+      padding: 12px 20px;
+    }
+
+    .top-bar-inner {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+
+    .g-dots {
+      display: inline-flex;
+      gap: 4px;
+    }
+
+    .g-dots span {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      border: 1.5px solid var(--ink);
+    }
+
+    .g-dots span:nth-child(1) { background: var(--g-blue); }
+    .g-dots span:nth-child(2) { background: var(--g-red); }
+    .g-dots span:nth-child(3) { background: var(--g-yellow); }
+    .g-dots span:nth-child(4) { background: var(--g-green); }
+
+    .right-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .lang-switch {
+      display: inline-flex;
+      background: var(--surface);
+      border: 1.5px solid var(--ink);
+      border-radius: 999px;
+      padding: 2px;
+      box-shadow: 0 2px 0 var(--ink);
+    }
+
+    .lang-btn {
+      border: none;
+      background: transparent;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 999px;
+      cursor: pointer;
+      color: var(--ink-muted);
+      transition: all 0.15s ease;
+    }
+
+    .lang-btn.active {
+      background: var(--ink);
+      color: #FFF;
+    }
+
+    .step-counter {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink);
+      background: var(--surface);
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1.5px solid var(--ink);
+    }
+
+    /* 4-Stage Google Color Progress Bar */
+    .stage-track {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .stage-seg {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stage-seg-label {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--ink-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .stage-seg.active .stage-seg-label,
+    .stage-seg.done .stage-seg-label {
+      color: var(--ink);
+    }
+
+    .stage-seg-bar {
+      height: 6px;
+      background: #E2E8F0;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(15, 23, 42, 0.2);
+    }
+
+    .stage-seg-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    #seg-0 .stage-seg-fill { background: var(--g-blue); }
+    #seg-1 .stage-seg-fill { background: var(--g-red); }
+    #seg-2 .stage-seg-fill { background: var(--g-yellow); }
+    #seg-3 .stage-seg-fill { background: var(--g-green); }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 20px 105px;
+    }
+
+    .card-stage {
+      width: 100%;
+      max-width: 640px;
+      position: relative;
+    }
+
+    .slide {
+      animation: slideIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .slide.back {
+      animation: slideInBack 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(14px) scale(0.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes slideInBack {
+      from { opacity: 0; transform: translateY(-14px) scale(0.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Welcome Card */
+    .welcome-card {
+      background: var(--surface);
+      border-radius: 26px;
+      padding: 36px 30px;
+      box-shadow: var(--shadow-card);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .welcome-stripe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 7px;
+      background: linear-gradient(90deg, var(--g-blue) 0% 25%, var(--g-red) 25% 50%, var(--g-yellow) 50% 75%, var(--g-green) 75% 100%);
+    }
+
+    .welcome-title {
+      font-size: clamp(32px, 6vw, 44px);
+      line-height: 1.08;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: var(--ink);
+    }
+
+    .welcome-desc {
+      font-size: 16.5px;
+      line-height: 1.58;
+      color: var(--ink-muted);
+      margin-bottom: 28px;
+    }
+
+    /* Question Headers */
+    .q-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink);
+      background: var(--active-soft);
+      border: 1.5px solid var(--ink);
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+    }
+
+    .q-eyebrow-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--active-accent);
+    }
+
+    .q-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(24px, 4.8vw, 32px);
+      line-height: 1.2;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
+    }
+
+    .q-subtitle {
+      font-size: 14.5px;
+      line-height: 1.5;
+      color: var(--ink-muted);
+      margin-bottom: 22px;
+    }
+
+    /* Choice Cards */
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+
+    .option-card {
+      width: 100%;
+      text-align: left;
+      background: var(--surface);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      box-shadow: var(--shadow-btn-sm);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.15s ease;
+      font-family: inherit;
+      color: var(--ink);
+    }
+
+    .option-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 0 var(--ink);
+      background: #FAFCFF;
+    }
+
+    .option-card:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 var(--ink);
+    }
+
+    .option-card.selected {
+      background: var(--active-soft);
+      box-shadow: 0 3px 0 var(--active-accent);
+    }
+
+    .option-emoji {
+      font-size: 22px;
+      line-height: 1;
+      flex-shrink: 0;
+      width: 38px;
+      height: 38px;
+      background: var(--surface-subtle);
+      border: 1.5px solid var(--ink);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .option-card.selected .option-emoji {
+      background: var(--surface);
+    }
+
+    .option-text {
+      flex: 1;
+    }
+
+    .option-title {
+      font-weight: 700;
+      font-size: 15.5px;
+      line-height: 1.3;
+    }
+
+    .option-desc {
+      font-size: 13px;
+      color: var(--ink-muted);
+      margin-top: 2px;
+      line-height: 1.35;
+    }
+
+    .option-key {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ink-muted);
+      border: 1.5px solid var(--border);
+      background: var(--surface-subtle);
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .option-card.selected .option-key {
+      background: var(--active-accent);
+      color: #FFF;
+      border-color: var(--ink);
+    }
+
+    /* Rank / Sort Cards (Q7) */
+    .rank-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .rank-item {
+      background: var(--surface);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-md);
+      padding: 13px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow-btn-sm);
+      transition: transform 0.15s ease, background-color 0.15s ease;
+    }
+
+    .rank-item.top-pick {
+      background: #FEF2F2;
+      box-shadow: 0 3px 0 var(--g-red);
+    }
+
+    .rank-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 14px;
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      background: var(--surface-subtle);
+      border: 1.5px solid var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .rank-item.top-pick .rank-badge {
+      background: var(--g-red);
+      color: #FFF;
+    }
+
+    .rank-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .rank-arrow {
+      width: 30px;
+      height: 24px;
+      border: 1.5px solid var(--ink);
+      background: var(--surface-subtle);
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink);
+    }
+
+    .rank-arrow:hover:not(:disabled) {
+      background: var(--ink);
+      color: #FFF;
+    }
+
+    .rank-arrow:disabled {
+      opacity: 0.28;
+      cursor: not-allowed;
+    }
+
+    /* Tag Cloud */
+    .tags-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-bottom: 12px;
+    }
+
+    .tag-pill {
+      background: var(--surface);
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      padding: 9px 15px;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--ink);
+      cursor: pointer;
+      box-shadow: 0 2px 0 var(--ink);
+      transition: all 0.12s ease;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tag-pill:hover {
+      transform: translateY(-1px);
+      background: #FFF;
+    }
+
+    .tag-pill.selected {
+      background: var(--active-accent);
+      color: #FFF;
+      box-shadow: 0 2px 0 var(--ink);
+    }
+
+    /* Yellow accent needs dark ink text for contrast */
+    .tag-pill.selected.yellow-ink {
+      color: var(--ink);
+    }
+
+    .tag-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-muted);
+    }
+
+    /* Demographics Dual Block */
+    .demo-section {
+      background: var(--surface);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow-btn-sm);
+      margin-bottom: 14px;
+    }
+
+    .demo-label {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-muted);
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .mini-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .mini-pill {
+      background: var(--surface-subtle);
+      border: 1.5px solid var(--ink);
+      border-radius: 10px;
+      padding: 8px 13px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      color: var(--ink);
+      transition: all 0.12s ease;
+    }
+
+    .mini-pill.selected {
+      background: var(--g-green);
+      color: #FFF;
+      box-shadow: 0 2px 0 var(--ink);
+    }
+
+    /* Text Inputs */
+    .text-input {
+      width: 100%;
+      background: var(--surface);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-md);
+      padding: 15px 16px;
+      font-size: 15.5px;
+      font-family: inherit;
+      color: var(--ink);
+      box-shadow: var(--shadow-btn-sm);
+      outline: none;
+      transition: box-shadow 0.15s;
+    }
+
+    .text-input:focus {
+      background: #FFF;
+      box-shadow: 0 4px 0 var(--active-accent);
+    }
+
+    .text-input::placeholder {
+      color: #94A3B8;
+    }
+
+    .input-error {
+      color: var(--g-red);
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      background: var(--g-blue);
+      color: #FFFFFF;
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-md);
+      padding: 15px 24px;
+      font-size: 16px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: var(--shadow-btn);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(0.95);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 var(--ink);
+    }
+
+    .btn-primary:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 var(--ink);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--ink);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-md);
+      padding: 12px 18px;
+      font-size: 14.5px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: var(--shadow-btn-sm);
+      transition: all 0.12s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-subtle);
+    }
+
+    /* Footer */
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(248, 250, 252, 0.94);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(15, 23, 42, 0.1);
+      padding: 12px 20px;
+      z-index: 20;
+    }
+
+    .footer-inner {
+      max-width: 640px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .hint-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      color: var(--ink-muted);
+      font-weight: 600;
+    }
+
+    /* Result & Tourist T-Shirt Preview */
+    .result-card {
+      background: var(--surface);
+      border: 2px solid var(--ink);
+      border-radius: 26px;
+      padding: 28px 24px;
+      box-shadow: 0 6px 0 var(--ink);
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .archetype-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ECFDF5;
+      color: #065F46;
+      border: 1.5px solid var(--ink);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .archetype-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(28px, 5.5vw, 38px);
+      line-height: 1.1;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .archetype-tagline {
+      font-size: 15.5px;
+      font-weight: 700;
+      color: var(--g-blue);
+      margin-bottom: 12px;
+    }
+
+    .archetype-desc {
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: var(--ink-muted);
+      margin-bottom: 18px;
+    }
+
+    .giveaway-box {
+      background: #FEF9C3;
+      border: 2px solid var(--ink);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .share-section {
+      padding-top: 18px;
+      border-top: 1.5px dashed var(--border);
+    }
+
+    .social-strip-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-muted);
+      text-align: center;
+      margin: 18px 0 10px;
+    }
+
+    .social-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .social-btn {
+      background: var(--surface);
+      color: var(--ink);
+      border: 2px solid var(--ink);
+      border-radius: 12px;
+      padding: 10px 6px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 2px 0 var(--ink);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .social-btn:hover {
+      background: var(--surface-subtle);
+      transform: translateY(-1px);
+      box-shadow: 0 3px 0 var(--ink);
+    }
+
+    .social-btn svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    .share-toast {
+      margin-top: 10px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--g-blue);
+      text-align: center;
+      min-height: 18px;
+    }
+
+    .save-status {
+      margin-top: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--g-green);
+      text-align: center;
+      min-height: 18px;
+    }
+
+    @media (max-width: 500px) {
+      .option-key, .hint-text { display: none; }
+      .welcome-card { padding: 28px 20px; }
+      .social-row { grid-template-columns: repeat(2, 1fr); }
+      .stage-seg-label { font-size: 9px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <div class="top-bar-inner">
+      <div class="top-row">
+        <div class="brand-badge">
+          <span class="g-dots"><span></span><span></span><span></span><span></span></span>
+          GDG Girona
+        </div>
+        <div class="right-controls">
+          <div class="lang-switch" role="group" aria-label="Language selector">
+            <button type="button" class="lang-btn active" data-lang="en">EN</button>
+            <button type="button" class="lang-btn" data-lang="es">ES</button>
+            <button type="button" class="lang-btn" data-lang="ca">CA</button>
+          </div>
+          <div class="step-counter" id="step-counter" style="display:none;">1 / 16</div>
+        </div>
+      </div>
+      <div class="stage-track" id="stage-track" style="display:none;">
+        <div class="stage-seg" id="seg-0">
+          <span class="stage-seg-label" id="seg-label-0">1. Profile</span>
+          <div class="stage-seg-bar"><div class="stage-seg-fill" id="fill-0"></div></div>
+        </div>
+        <div class="stage-seg" id="seg-1">
+          <span class="stage-seg-label" id="seg-label-1">2. Formats</span>
+          <div class="stage-seg-bar"><div class="stage-seg-fill" id="fill-1"></div></div>
+        </div>
+        <div class="stage-seg" id="seg-2">
+          <span class="stage-seg-label" id="seg-label-2">3. Perks</span>
+          <div class="stage-seg-bar"><div class="stage-seg-fill" id="fill-2"></div></div>
+        </div>
+        <div class="stage-seg" id="seg-3">
+          <span class="stage-seg-label" id="seg-label-3">4. Tech & Draw</span>
+          <div class="stage-seg-bar"><div class="stage-seg-fill" id="fill-3"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <div class="card-stage" id="stage-container"></div>
+  </main>
+
+  <footer id="app-footer" style="display:none;">
+    <div class="footer-inner">
+      <button type="button" class="btn-secondary" id="btn-back">← Back</button>
+      <span class="hint-text" id="footer-hint">Enter ↵</span>
+      <button type="button" class="btn-primary" id="btn-next" style="width:auto; padding: 12px 24px;">Next →</button>
+    </div>
+  </footer>
+
+  <script>
+    /**
+     * ============================================================================
+     * CONFIG — GDG GIRONA URL & SERVERLESS DATABASE ENDPOINT
+     * ============================================================================
+     */
+    const GDG_CHAPTER_URL = "https://gdg.community.dev/gdg-girona/";
+
+    async function submitSurveyData(payload) {
+      console.log("GDG Girona Payload:", JSON.stringify(payload, null, 2));
+
+      if (window.location.protocol === "file:") {
+        return { ok: true, mode: "local_demo" };
+      }
+
+      try {
+        const res = await fetch("/api/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        return { ok: res.ok, mode: "vercel_proxy" };
+      } catch (err) {
+        console.error("Submission error:", err);
+        return { ok: false, error: err.message };
+      }
+    }
+
+    /**
+     * ============================================================================
+     * TRILINGUAL UI STRINGS (EN / ES / CA)
+     * ============================================================================
+     */
+    const UI = {
+      en: {
+        welcomeTitle: "GDG Girona Attendee Survey",
+        welcomeDesc: "Help us shape next year's workshops, talks, and perks in 2 minutes. Complete & share to enter a €50 Amazon gift card draw.",
+        startBtn: "Start →",
+        backBtn: "← Back",
+        nextBtn: "Next →",
+        finishBtn: "Finish & Enter Draw ✨",
+        stages: ["1. Profile", "2. Formats", "3. Perks", "4. Tech & Draw"],
+        selectedCount: (n) => `${n} selected`,
+        rankHint: "Use ↑ ↓ arrows to rank from #1 (most excited) to #4",
+        otherFieldPlaceholder: "Type your field or degree (e.g., Biology, Architecture)...",
+        otherGenderPlaceholder: "How do you identify?",
+        contactRequiredErr: "Please enter an email or handle so we can contact the €50 winner!",
+        resultBadge: "Survey Complete • €50 Draw Entry Confirmed",
+        giveawayNote: "To lock in your €50 Amazon gift card entry, share the GDG Girona link below or post your digital t-shirt card!",
+        saveResultsBtn: "Save results",
+        shareStripLabel: "Share GDG Girona to enter the €50 draw",
+        copyLinkBtn: "Copy link",
+        copiedBtn: "Copied ✓",
+        copiedLinkToast: "GDG Girona link copied to clipboard.",
+        copiedLiToast: "Post caption copied — paste it into LinkedIn!",
+        savingDb: "Recording your response...",
+        savedDb: "✓ Response saved — good luck in the €50 draw!",
+        errorDb: "⚠ Could not reach database (check console for payload).",
+        restartBtn: "Start Over",
+        shareCaption: (archName) => `Just completed the GDG Girona Attendee Survey (my builder profile: ${archName}). Join the community for upcoming workshops, DevFest & tech talks:`
+      },
+      es: {
+        welcomeTitle: "Encuesta para asistentes — GDG Girona",
+        welcomeDesc: "Ayúdanos a diseñar los talleres, charlas y ventajas del próximo año en 2 minutos. Completa y comparte para entrar en el sorteo de una tarjeta Amazon de 50 €.",
+        startBtn: "Empezar →",
+        backBtn: "← Atrás",
+        nextBtn: "Siguiente →",
+        finishBtn: "Finalizar y participar ✨",
+        stages: ["1. Perfil", "2. Formatos", "3. Ventajas", "4. Tech y Sorteo"],
+        selectedCount: (n) => `${n} seleccionados`,
+        rankHint: "Usa las flechas ↑ ↓ para ordenar del #1 (mayor interés) al #4",
+        otherFieldPlaceholder: "Escribe tu carrera o sector (ej. Biología, Arquitectura)...",
+        otherGenderPlaceholder: "¿Cómo te identificas?",
+        contactRequiredErr: "¡Déjanos un email o usuario para contactar si ganas los 50 €!",
+        resultBadge: "Encuesta completada • Participación registrada",
+        giveawayNote: "Para validar tu participación en el sorteo de 50 € en Amazon, comparte el enlace de GDG Girona abajo o sube tu camiseta digital.",
+        saveResultsBtn: "Save results",
+        shareStripLabel: "Comparte GDG Girona para entrar en el sorteo de 50 €",
+        copyLinkBtn: "Copiar enlace",
+        copiedBtn: "Copiado ✓",
+        copiedLinkToast: "Enlace de GDG Girona copiado.",
+        copiedLiToast: "Texto copiado — ¡pégalo en tu publicación de LinkedIn!",
+        savingDb: "Guardando tus respuestas...",
+        savedDb: "✓ Respuestas guardadas — ¡suerte en el sorteo de 50 €!",
+        errorDb: "⚠ No se pudo conectar con la base de datos.",
+        restartBtn: "Volver a empezar",
+        shareCaption: (archName) => `Acabo de completar la encuesta de GDG Girona (mi perfil: ${archName}). Únete a la comunidad para los próximos talleres, charlas y DevFest:`
+      },
+      ca: {
+        welcomeTitle: "Enquesta per a assistents — GDG Girona",
+        welcomeDesc: "Ajuda'ns a dissenyar els tallers, xerrades i avantatges de l'any vinent en 2 minuts. Completa i comparteix per entrar al sorteig d'una targeta Amazon de 50 €.",
+        startBtn: "Començar →",
+        backBtn: "← Enrere",
+        nextBtn: "Següent →",
+        finishBtn: "Finalitzar i participar ✨",
+        stages: ["1. Perfil", "2. Formats", "3. Avantatges", "4. Tech i Sorteig"],
+        selectedCount: (n) => `${n} seleccionats`,
+        rankHint: "Fes servir les fletxes ↑ ↓ per ordenar del #1 (més interès) al #4",
+        otherFieldPlaceholder: "Escriu els teus estudis o sector (ex. Biologia, Arquitectura)...",
+        otherGenderPlaceholder: "Com t'identifiques?",
+        contactRequiredErr: "Deixa'ns un correu o usuari per contactar-te si guanyes els 50 €!",
+        resultBadge: "Enquesta completada • Participació registrada",
+        giveawayNote: "Per validar la teva participació al sorteig de 50 € d'Amazon, comparteix l'enllaç de GDG Girona a sota o puja la teva samarreta digital.",
+        saveResultsBtn: "Save results",
+        shareStripLabel: "Comparteix GDG Girona per entrar al sorteig de 50 €",
+        copyLinkBtn: "Copia l'enllaç",
+        copiedBtn: "Copiat ✓",
+        copiedLinkToast: "Enllaç de GDG Girona copiat.",
+        copiedLiToast: "Text copiat — enganxa'l a la teva publicació de LinkedIn!",
+        savingDb: "Desant les respostes...",
+        savedDb: "✓ Respostes desades — sort al sorteig de 50 €!",
+        errorDb: "⚠ No s'ha pogut connectar amb la base de dades.",
+        restartBtn: "Torna a començar",
+        shareCaption: (archName) => `Acabo de completar l'enquesta de GDG Girona (el meu perfil: ${archName}). Uneix-te a la comunitat per als pròxims tallers, xerrades i DevFest:`
+      }
+    };
+
+    const TECH_TOOLS = [
+      "Cloud Hosting", "Virtual Machines", "Google Cloud Console",
+      "Firebase", "Supabase", "Docker", "Kubernetes",
+      "AI Coding Agents", "Google Antigravity",
+      "LLM APIs (OpenAI / Anthropic)", "Gemini API / AI Studio",
+      "Open-Weight Models (Llama / Mistral)", "Gemma",
+      "AI Research Notebooks", "NotebookLM",
+      "CI/CD Pipelines", "Serverless Functions"
+    ];
+
+    /**
+     * ============================================================================
+     * 16 TRILINGUAL QUESTIONS
+     * ============================================================================
+     */
+    const QUESTIONS = [
+      {
+        id: "gdg_prior_experience",
+        stage: 0,
+        type: "single",
+        autoAdvance: true,
+        eyebrow: { en: "Q1 • Community", es: "P1 • Comunidad", ca: "P1 • Comunitat" },
+        title: {
+          en: "Have you ever been to a GDG event before?",
+          es: "¿Has venido alguna vez a un evento de GDG?",
+          ca: "Has vingut mai a un esdeveniment de GDG?"
+        },
+        subtitle: {
+          en: "Helps us understand how people discover us.",
+          es: "Nos ayuda a saber cómo nos descubre la gente.",
+          ca: "Ens ajuda a saber com ens descobreix la gent."
+        },
+        options: [
+          {
+            value: "Brand new to GDG",
+            emoji: "✨",
+            label: { en: "First time & brand new", es: "Primera vez y nuevo/a", ca: "Primera vegada i nou/va" },
+            desc: { en: "I hadn't even heard of GDG before this", es: "Ni siquiera conocía GDG antes de esto", ca: "Ni tan sols coneixia GDG abans d'això" }
+          },
+          {
+            value: "First time, knew GDG",
+            emoji: "👋",
+            label: { en: "First time, knew GDG", es: "Primera vez, conocía GDG", ca: "Primera vegada, coneixia GDG" },
+            desc: { en: "I knew what GDG was, but this is my first event", es: "Sabía qué era GDG, pero es mi primer evento", ca: "Sabia què era GDG, però és el meu primer esdeveniment" }
+          },
+          {
+            value: "Attended 1-2 times",
+            emoji: "🔄",
+            label: { en: "Been to 1–2 events", es: "He ido a 1–2 eventos", ca: "He anat a 1–2 esdeveniments" },
+            desc: { en: "In Girona or another city", es: "En Girona o en otra ciudad", ca: "A Girona o en una altra ciutat" }
+          },
+          {
+            value: "GDG Regular",
+            emoji: "🏛️",
+            label: { en: "GDG Regular", es: "Habitual de GDG", ca: "Habitual de GDG" },
+            desc: { en: "I come whenever I can", es: "Vengo siempre que puedo", ca: "Vinc sempre que puc" }
+          }
+        ]
+      },
+      {
+        id: "career_stage",
+        stage: 0,
+        type: "single",
+        autoAdvance: true,
+        eyebrow: { en: "Q2 • Background", es: "P2 • Etapa", ca: "P2 • Etapa" },
+        title: {
+          en: "Where are you at right now?",
+          es: "¿En qué etapa estás ahora mismo?",
+          ca: "En quina etapa ets ara mateix?"
+        },
+        subtitle: {
+          en: "So we can balance beginner-friendly sessions and advanced deep dives.",
+          es: "Para equilibrar sesiones de iniciación y charlas avanzadas.",
+          ca: "Per equilibrar sessions d'iniciació i xerrades avançades."
+        },
+        options: [
+          {
+            value: "University student",
+            emoji: "🎓",
+            label: { en: "University student", es: "Estudiante universitario/a", ca: "Estudiant universitari/ària" },
+            desc: { en: "Early or mid-degree", es: "Inicio o mitad de carrera", ca: "Inici o meitat de carrera" }
+          },
+          {
+            value: "About to graduate",
+            emoji: "🚀",
+            label: { en: "About to graduate", es: "A punto de graduarme", ca: "A punt de graduar-me" },
+            desc: { en: "Final year or thesis (TFG/TFM) stage", es: "Último año o TFG/TFM", ca: "Últim any o TFG/TFM" }
+          },
+          {
+            value: "Working in tech",
+            emoji: "💻",
+            label: { en: "Working in tech", es: "Trabajando en tech", ca: "Treballant en tech" },
+            desc: { en: "Engineering, data, product, or design", es: "Ingeniería, datos, producto o diseño", ca: "Enginyeria, dades, producte o disseny" }
+          },
+          {
+            value: "Switching into tech",
+            emoji: "🔀",
+            label: { en: "Switching into tech", es: "Cambiando hacia tech", ca: "Canviant cap a tech" },
+            desc: { en: "Coming from another industry", es: "Vengo de otro sector", ca: "Vinc d'un altre sector" }
+          },
+          {
+            value: "Founder / Freelancer",
+            emoji: "🛠️",
+            label: { en: "Founder / Freelancer", es: "Founder / Freelance", ca: "Founder / Freelance" },
+            desc: { en: "Building my own project or consulting", es: "Construyendo mi propio proyecto", ca: "Construint el meu propi projecte" }
+          }
+        ]
+      },
+      {
+        id: "field_of_study_work",
+        stage: 0,
+        type: "single_with_other",
+        autoAdvance: true,
+        eyebrow: { en: "Q3 • Field", es: "P3 • Área", ca: "P3 • Àrea" },
+        title: {
+          en: "What are you studying or working in?",
+          es: "¿Qué estudias o en qué sector trabajas?",
+          ca: "Què estudies o en quin sector treballes?"
+        },
+        subtitle: {
+          en: "We'd love to see which faculties or industries beyond Computer Science are showing up.",
+          es: "Queremos ver qué facultades o sectores fuera de Informática se animan a venir.",
+          ca: "Volem veure quines facultats o sectors fora d'Informàtica s'animen a venir."
+        },
+        options: [
+          { value: "Computer Science / Software", emoji: "⌨️", label: { en: "Computer Science / Software", es: "Ingeniería Informática / Software", ca: "Enginyeria Informàtica / Software" } },
+          { value: "Data Science / AI", emoji: "🧠", label: { en: "Data Science / AI", es: "Ciencia de Datos / IA", ca: "Ciència de Dades / IA" } },
+          { value: "Telecom / Electronics", emoji: "📡", label: { en: "Telecom / Electronics", es: "Telecomunicaciones / Electrónica", ca: "Telecomunicacions / Electrònica" } },
+          { value: "Design / Multimedia", emoji: "🎨", label: { en: "Design / Multimedia", es: "Diseño / Multimedia", ca: "Disseny / Multimèdia" } },
+          { value: "Business / Economics", emoji: "📊", label: { en: "Business / Economics", es: "Empresa / Economía", ca: "Empresa / Economia" } },
+          { value: "Biotech / Health / Sciences", emoji: "🧬", label: { en: "Biotech / Health / Sciences", es: "Biotecnología / Salud / Ciencias", ca: "Biotecnologia / Salut / Ciències" } },
+          { value: "Other", emoji: "✎", label: { en: "Other field", es: "Otro sector / carrera", ca: "Un altre sector / carrera" } }
+        ]
+      },
+      {
+        id: "travel_origin",
+        stage: 0,
+        type: "single",
+        autoAdvance: true,
+        eyebrow: { en: "Q4 • Location", es: "P4 • Ubicación", ca: "P4 • Ubicació" },
+        title: {
+          en: "Where did you travel from for this event?",
+          es: "¿Desde dónde has venido a este evento?",
+          ca: "Des d'on has vingut a aquest esdeveniment?"
+        },
+        subtitle: {
+          en: "Helps us pick better schedules and venues.",
+          es: "Nos ayuda a elegir mejores horarios y ubicaciones.",
+          ca: "Ens ajuda a triar millors horaris i ubicacions."
+        },
+        options: [
+          { value: "Girona city", emoji: "🏙️", label: { en: "Girona city", es: "Girona ciudad", ca: "Girona ciutat" } },
+          { value: "Nearby town (Gironès / Costa Brava)", emoji: "🚆", label: { en: "Nearby town (Gironès / Costa Brava)", es: "Pueblo cercano (Gironès / Costa Brava)", ca: "Poble proper (Gironès / Costa Brava)" } },
+          { value: "Elsewhere in Catalonia", emoji: "🗺️", label: { en: "Elsewhere in Catalonia (Barcelona, etc.)", es: "Otro punto de Cataluña (Barcelona, etc.)", ca: "Un altre punt de Catalunya (Barcelona, etc.)" } },
+          { value: "Outside Catalonia", emoji: "✈️", label: { en: "Outside Catalonia", es: "Fuera de Cataluña", ca: "Fora de Catalunya" } }
+        ]
+      },
+      {
+        id: "travel_motivation",
+        stage: 0,
+        type: "multi",
+        condition: (ans) => ans.travel_origin && ans.travel_origin !== "Girona city",
+        eyebrow: { en: "Q5 • Worth the Trip", es: "P5 • El Viaje", ca: "P5 • El Viatge" },
+        title: {
+          en: "What makes a GDG Girona event worth traveling for?",
+          es: "¿Qué hace que te merezca la pena viajar a un evento en Girona?",
+          ca: "Què fa que et valgui la pena desplaçar-te a un esdeveniment a Girona?"
+        },
+        subtitle: {
+          en: "Pick all that apply.",
+          es: "Selecciona todas las que apliquen.",
+          ca: "Selecciona totes les que apliquin."
+        },
+        options: [
+          { value: "Hands-on workshops", emoji: "🛠️", label: { en: "Hands-on workshops where I build something", es: "Talleres prácticos donde construir algo", ca: "Tallers pràctics on construir alguna cosa" } },
+          { value: "Industry tech talks", emoji: "⚡", label: { en: "Talks on real-world tech not taught in class", es: "Charlas sobre tecnología real que no se da en clase", ca: "Xerrades sobre tecnologia real que no s'ensenya a classe" } },
+          { value: "Local company networking", emoji: "🤝", label: { en: "Networking with local tech companies", es: "Networking con empresas tech de la zona", ca: "Networking amb empreses tech de la zona" } },
+          { value: "Guest speakers", emoji: "🎙️", label: { en: "Guest speakers & cross-disciplinary topics", es: "Ponentes invitados y temas multidisciplinares", ca: "Ponents convidats i temes multidisciplinaris" } },
+          { value: "Food, swag & prizes", emoji: "🍕", label: { en: "Free food, swag, or competitions", es: "Comida gratis, regalos o competiciones", ca: "Menjar gratis, regals o competicions" } }
+        ]
+      },
+      {
+        id: "attending_crew",
+        stage: 0,
+        type: "single",
+        autoAdvance: true,
+        eyebrow: { en: "Q6 • Crew", es: "P6 • Compañía", ca: "P6 • Companyia" },
+        title: {
+          en: "Who did you come with today?",
+          es: "¿Con quién has venido hoy?",
+          ca: "Amb qui has vingut avui?"
+        },
+        subtitle: {
+          en: "Helps us design better icebreakers.",
+          es: "Nos ayuda a diseñar mejores dinámicas para romper el hielo.",
+          ca: "Ens ajuda a dissenyar millors dinàmiques per trencar el gel."
+        },
+        options: [
+          { value: "Solo", emoji: "🚶", label: { en: "Solo", es: "Solo/a", ca: "Sol/a" } },
+          { value: "With friends / classmates", emoji: "👯", label: { en: "With friends or classmates", es: "Con amigos o compañeros de clase", ca: "Amb amics o companys de classe" } },
+          { value: "With coworkers", emoji: "💼", label: { en: "With coworkers", es: "Con compañeros de trabajo", ca: "Amb companys de feina" } }
+        ]
+      },
+      {
+        id: "format_ranking",
+        stage: 1,
+        type: "rank",
+        eyebrow: { en: "Q7 • Rank Formats", es: "P7 • Ordena Formatos", ca: "P7 • Ordena Formats" },
+        title: {
+          en: "Sort these event formats by level of interest",
+          es: "Ordena estos formatos según tu nivel de interés",
+          ca: "Ordena aquests formats segons el teu nivell d'interès"
+        },
+        subtitle: {
+          en: "Put your #1 favorite at the top.",
+          es: "Coloca tu formato favorito (#1) arriba del todo.",
+          ca: "Col·loca el teu format favorit (#1) a dalt de tot."
+        },
+        items: [
+          {
+            value: "Finish-in-one-session sprint",
+            emoji: "🏁",
+            label: { en: "Finish-in-one-session sprint", es: "Sprint de proyecto terminado", ca: "Sprint de projecte acabat" },
+            desc: { en: "Leave with a working mini-project built on the spot", es: "Salir con un mini-proyecto funcionando ese mismo día", ca: "Sortir amb un mini-projecte funcionant el mateix dia" }
+          },
+          {
+            value: "Starter-kit workshop",
+            emoji: "📦",
+            label: { en: "Starter-kit workshop", es: "Taller con plantilla base", ca: "Taller amb plantilla base" },
+            desc: { en: "Build the core together, take it home to polish", es: "Construir la base juntos y terminarlo en casa", ca: "Construir la base junts i acabar-lo a casa" }
+          },
+          {
+            value: "Industry deep-dive talks",
+            emoji: "🔬",
+            label: { en: "Industry deep-dive talks", es: "Charlas técnicas de industria", ca: "Xerrades tècniques d'indústria" },
+            desc: { en: "Modern tools & practices beyond university syllabi", es: "Herramientas y prácticas reales que no se ven en la uni", ca: "Eines i pràctiques reals que no es veuen a la uni" }
+          },
+          {
+            value: "Open networking & demos",
+            emoji: "💬",
+            label: { en: "Open networking & demos", es: "Networking y demos rápidas", ca: "Networking i demos ràpides" },
+            desc: { en: "Casual chats, lightning demos, and meeting peers", es: "Charlas informales, mini-demos y conocer gente", ca: "Xerrades informals, mini-demos i conèixer gent" }
+          }
+        ]
+      },
+      {
+        id: "career_geography",
+        stage: 1,
+        type: "single",
+        autoAdvance: true,
+        eyebrow: { en: "Q8 • Horizons", es: "P8 • Futuro", ca: "P8 • Futur" },
+        title: {
+          en: "How do you picture your career over the next 2–3 years?",
+          es: "¿Cómo te imaginas tu carrera en los próximos 2–3 años?",
+          ca: "Com t'imagines la teva carrera en els pròxims 2–3 anys?"
+        },
+        subtitle: {
+          en: "Helps us know if we should bring speakers who work abroad or remotely.",
+          es: "Nos dice si debemos traer ponentes que trabajen fuera o en remoto.",
+          ca: "Ens diu si hem de portar ponents que treballin fora o en remot."
+        },
+        options: [
+          {
+            value: "Stay local",
+            emoji: "🏡",
+            label: { en: "Stay local", es: "Quedarme en el ecosistema local", ca: "Quedar-me a l'ecosistema local" },
+            desc: { en: "Build my career in Girona / Catalonia", es: "Desarrollar mi carrera en Girona / Cataluña", ca: "Desenvolupar la meva carrera a Girona / Catalunya" }
+          },
+          {
+            value: "Go remote",
+            emoji: "🌍",
+            label: { en: "Go remote", es: "Trabajar en remoto", ca: "Treballar en remot" },
+            desc: { en: "Live here, work remotely for international teams", es: "Vivir aquí y trabajar para empresas internacionales", ca: "Viure aquí i treballar per a empreses internacionals" }
+          },
+          {
+            value: "Move abroad",
+            emoji: "🛫",
+            label: { en: "Move abroad", es: "Irme al extranjero", ca: "Marxar a l'estranger" },
+            desc: { en: "Relocate to another country for bigger tech hubs", es: "Mudarme fuera a hubs tecnológicos más grandes", ca: "Mudar-me fora a hubs tecnològics més grans" }
+          },
+          {
+            value: "Curious, no roadmap yet",
+            emoji: "🧭",
+            label: { en: "Curious, no roadmap yet", es: "Tengo curiosidad, pero sin mapa", ca: "Tinc curiositat, però sense mapa" },
+            desc: { en: "I'd love to work abroad or remotely, just don't know how", es: "Me gustaría trabajar fuera o en remoto, pero no sé cómo empezar", ca: "M'agradaria treballar fora o en remot, però no sé com començar" }
+          }
+        ]
+      },
+      {
+        id: "cross_disciplinary_topics",
+        stage: 1,
+        type: "tags_translated",
+        eyebrow: { en: "Q9 • Beyond AI", es: "P9 • Más allá de la IA", ca: "P9 • Més enllà de la IA" },
+        title: {
+          en: "Beyond coding & AI, what other fields would you attend a talk on?",
+          es: "Más allá de programar e IA, ¿a qué otras charlas vendrías?",
+          ca: "Més enllà de programar i IA, a quines altres xerrades vindries?"
+        },
+        subtitle: {
+          en: "We're thinking about inviting experts from other scientific and creative fields.",
+          es: "Estamos pensando en invitar a expertos de otros campos científicos y creativos.",
+          ca: "Estem pensant a convidar experts d'altres camps científics i creatius."
+        },
+        tags: [
+          { value: "Neuroscience & Brain-Tech", label: { en: "Neuroscience & Brain-Tech", es: "Neurociencia y Brain-Tech", ca: "Neurociència i Brain-Tech" } },
+          { value: "Astrophysics & Space", label: { en: "Astrophysics & Space", es: "Astrofísica y Espacio", ca: "Astrofísica i Espai" } },
+          { value: "Biotech & Health", label: { en: "Biotech & Health", es: "Biotecnología y Salud", ca: "Biotecnologia i Salut" } },
+          { value: "Quantum & Physics", label: { en: "Quantum & Physics", es: "Física y Computación Cuántica", ca: "Física i Computació Quàntica" } },
+          { value: "UI/UX & Product Design", label: { en: "UI/UX & Product Design", es: "Diseño UI/UX y Producto", ca: "Disseny UI/UX i Producte" } },
+          { value: "Game Dev & Graphics", label: { en: "Game Dev & Graphics", es: "Videojuegos y Gráficos", ca: "Videojocs i Gràfics" } },
+          { value: "Cybersecurity & Privacy", label: { en: "Cybersecurity & Privacy", es: "Ciberseguridad y Privacidad", ca: "Ciberseguretat i Privacitat" } },
+          { value: "Hardware & Robotics", label: { en: "Hardware & Robotics", es: "Hardware y Robótica", ca: "Maquinari i Robòtica" } },
+          { value: "Pure software/AI only", label: { en: "Pure software/AI only", es: "Solo software e IA", ca: "Només programari i IA" } }
+        ]
+      },
+      {
+        id: "entrepreneurship_interest",
+        stage: 1,
+        type: "single",
+        autoAdvance: true,
+        eyebrow: { en: "Q10 • Startups", es: "P10 • Startups", ca: "P10 • Startups" },
+        title: {
+          en: "Are you interested in startup & entrepreneurship topics?",
+          es: "¿Te interesan los temas de startups y emprendimiento?",
+          ca: "T'interessen els temes de startups i emprenedoria?"
+        },
+        subtitle: {
+          en: "From validating an idea to building indie products.",
+          es: "Desde validar una idea hasta lanzar proyectos independientes.",
+          ca: "Des de validar una idea fins a llançar projectes independents."
+        },
+        options: [
+          {
+            value: "Yes — building from zero",
+            emoji: "🚀",
+            label: { en: "Yes — building from zero", es: "Sí — crear desde cero", ca: "Sí — crear des de zero" },
+            desc: { en: "Validating ideas, finding co-founders, launching an MVP", es: "Validar ideas, buscar co-founders y lanzar un MVP", ca: "Validar idees, buscar co-founders i llançar un MVP" }
+          },
+          {
+            value: "Yes — indie & freelancing",
+            emoji: "💸",
+            label: { en: "Yes — indie & freelancing", es: "Sí — indie y freelance", ca: "Sí — indie i freelance" },
+            desc: { en: "Side projects, micro-SaaS, and monetizing skills", es: "Proyectos propios, micro-SaaS y monetizar habilidades", ca: "Projectes propis, micro-SaaS i monetitzar habilitats" }
+          },
+          {
+            value: "A little (tech side)",
+            emoji: "⚙️",
+            label: { en: "A little", es: "Un poco", ca: "Una mica" },
+            desc: { en: "Mostly the engineering side of working at a startup", es: "Sobre todo la parte técnica de trabajar en una startup", ca: "Sobretot la part tècnica de treballar en una startup" }
+          },
+          {
+            value: "Not really",
+            emoji: "🧪",
+            label: { en: "Not really", es: "La verdad es que no", ca: "La veritat és que no" },
+            desc: { en: "I'm here purely for tech and science", es: "Vengo puramente por la tecnología y la ciencia", ca: "Vinc purament per la tecnologia i la ciència" }
+          }
+        ]
+      },
+      {
+        id: "valuable_perks",
+        stage: 2,
+        type: "multi",
+        eyebrow: { en: "Q11 • Perks & Access", es: "P11 • Ventajas", ca: "P11 • Avantatges" },
+        title: {
+          en: "Which perks would be most valuable to you at GDG Girona?",
+          es: "¿Qué ventajas te resultarían más útiles en GDG Girona?",
+          ca: "Quins avantatges et resultarien més útils a GDG Girona?"
+        },
+        subtitle: {
+          en: "We can unlock certain resources and event passes for our community.",
+          es: "Podemos conseguir ciertos recursos y pases a eventos para la comunidad.",
+          ca: "Podem aconseguir certs recursos i passis a esdeveniments per a la comunitat."
+        },
+        options: [
+          {
+            value: "MWC & Talent Arena access",
+            emoji: "🎟️",
+            label: { en: "Big event access", es: "Acceso a grandes eventos", ca: "Accés a grans esdeveniments" },
+            desc: { en: "Easier/free passes or group trips to MWC & Talent Arena", es: "Entradas o viajes en grupo al MWC y Talent Arena", ca: "Entrades o viatges en grup al MWC i Talent Arena" }
+          },
+          {
+            value: "Creator courses & books",
+            emoji: "📚",
+            label: { en: "Creator & learning resources", es: "Recursos de creadores", ca: "Recursos de creadors" },
+            desc: { en: "Courses, books, or tools from top tech educators", es: "Cursos, libros o licencias de referentes tech", ca: "Cursos, llibres o llicències de referents tech" }
+          },
+          {
+            value: "Google Cloud & AI credits",
+            emoji: "☁️",
+            label: { en: "Cloud & AI credits", es: "Créditos Cloud e IA", ca: "Crèdits Cloud i IA" },
+            desc: { en: "Google Cloud or Gemini API credits for your projects", es: "Créditos de Google Cloud o Gemini API para tus proyectos", ca: "Crèdits de Google Cloud o Gemini API per als teus projectes" }
+          },
+          {
+            value: "Hiring & portfolio intros",
+            emoji: "🤝",
+            label: { en: "Career connections", es: "Conexiones laborales", ca: "Connexions laborals" },
+            desc: { en: "Direct intros to hiring teams & portfolio feedback", es: "Contacto directo con empresas y revisión de portfolio", ca: "Contacte directe amb empreses i revisió de portfoli" }
+          }
+        ]
+      },
+      {
+        id: "invite_friend_triggers",
+        stage: 2,
+        type: "multi",
+        eyebrow: { en: "Q12 • Bring a Friend", es: "P12 • Trae a alguien", ca: "P12 • Porta algú" },
+        title: {
+          en: "What would make you definitely invite a friend next time?",
+          es: "¿Qué haría que invitases seguro a un amigo/a la próxima vez?",
+          ca: "Què faria que convidessis segur un amic/ga la pròxima vegada?"
+        },
+        subtitle: {
+          en: "Pick whatever moves the needle.",
+          es: "Elige lo que más te anime.",
+          ca: "Tria el que més t'animi."
+        },
+        options: [
+          { value: "Free food & drinks", emoji: "🍕", label: { en: "Free food & drinks", es: "Comida y bebida gratis", ca: "Menjar i beguda gratis" } },
+          { value: "Hands-on hardware", emoji: "🤖", label: { en: "Hands-on hardware (sensors, VR, Raspberry Pi)", es: "Hardware para trastear (sensores, VR, Raspberry Pi)", ca: "Maquinari per experimentar (sensors, VR, Raspberry Pi)" } },
+          { value: "Mini-hackathons & prizes", emoji: "🏆", label: { en: "Mini-hackathons & competitions", es: "Mini-hackathones y competiciones", ca: "Mini-hackatons i competicions" } },
+          { value: "Beginner-friendly sessions", emoji: "🌱", label: { en: "Beginner-friendly sessions", es: "Sesiones aptas para principiantes", ca: "Sessions aptes per a principiants" } },
+          { value: "Standout guest speaker", emoji: "🌟", label: { en: "A standout guest speaker", es: "Un/a ponente invitado/a top", ca: "Un/a ponent convidat/da top" } }
+        ]
+      },
+      {
+        id: "ticket_fee_attitude",
+        stage: 2,
+        type: "single",
+        autoAdvance: true,
+        eyebrow: { en: "Q13 • Sustainability", es: "P13 • Sostenibilidad", ca: "P13 • Sostenibilitat" },
+        title: {
+          en: "GDG Girona is 100% non-profit—we never take a cent. If a small ticket fee made it easier to fund food, hardware, or event passes (instead of relying only on sponsors), how would you feel?",
+          es: "GDG Girona es 100 % sin ánimo de lucro: nunca ganamos dinero. Si una pequeña entrada facilitara cubrir comida, hardware o pases a eventos (sin depender solo de sponsors), ¿qué opinas?",
+          ca: "GDG Girona és 100 % sense ànim de lucre: mai guanyem diners. Si una petita entrada facilités cobrir menjar, maquinari o passis a esdeveniments (sense dependre només d'espònsors), què en penses?"
+        },
+        subtitle: {
+          en: "Just testing the waters—we always look for sponsorships first.",
+          es: "Solo queremos tantear el terreno: siempre buscamos patrocinadores primero.",
+          ca: "Només volem temptejar el terreny: sempre busquem patrocinadors primer."
+        },
+        options: [
+          {
+            value: "Keep it 100% free",
+            emoji: "🆓",
+            label: { en: "Keep it 100% free", es: "Mejor 100 % gratis", ca: "Millor 100 % gratis" },
+            desc: { en: "I'd rather wait for sponsored events", es: "Prefiero esperar a eventos con patrocinadores", ca: "Prefereixo esperar a esdeveniments amb patrocinadors" }
+          },
+          {
+            value: "Voluntary donation",
+            emoji: "💛",
+            label: { en: "Voluntary donation", es: "Donación voluntaria", ca: "Donació voluntària" },
+            desc: { en: "Happy to chip in €2–€5 when I can", es: "Encantado/a de aportar 2–5 € cuando pueda", ca: "Encantat/da d'aportar 2–5 € quan pugui" }
+          },
+          {
+            value: "Small ticket fee (€3–€8)",
+            emoji: "🎫",
+            label: { en: "Small ticket fee (€3–€8)", es: "Pequeña entrada (3–8 €)", ca: "Petita entrada (3–8 €)" },
+            desc: { en: "Totally fine if it goes directly toward food, materials, or perks", es: "Bien si va directo a cubrir comida, material o ventajas", ca: "Bé si va directe a cobrir menjar, material o avantatges" }
+          },
+          {
+            value: "Up to €15+ for special editions",
+            emoji: "🚀",
+            label: { en: "Up to €15+ for special editions", es: "Hasta 15 €+ en ediciones especiales", ca: "Fins a 15 €+ en edicions especials" },
+            desc: { en: "Worth it for full-day workshops, hardware, or MWC access", es: "Merece la pena por talleres completos, hardware o acceso al MWC", ca: "Val la pena per tallers complets, maquinari o accés al MWC" }
+          }
+        ]
+      },
+      {
+        id: "tech_radar",
+        stage: 3,
+        type: "tags_raw",
+        eyebrow: { en: "Q14 • Tech Radar", es: "P14 • Radar Tech", ca: "P14 • Radar Tech" },
+        title: {
+          en: "Which of these tools or concepts have you actually used or built with?",
+          es: "¿Cuáles de estas herramientas o conceptos has usado o con cuáles has construido algo?",
+          ca: "Quines d'aquestes eines o conceptes has fet servir o amb quines has construït alguna cosa?"
+        },
+        subtitle: {
+          en: "Tap everything you're familiar with (skip what you haven't touched yet).",
+          es: "Marca todo lo que conozcas (salta lo que aún no hayas tocado).",
+          ca: "Marca tot el que coneguis (salta el que encara no hagis tocat)."
+        },
+        tags: TECH_TOOLS
+      },
+      {
+        id: "demographics",
+        stage: 3,
+        type: "demographics",
+        eyebrow: { en: "Q15 • Optional", es: "P15 • Opcional", ca: "P15 • Opcional" },
+        title: {
+          en: "Quick demographics",
+          es: "Datos demográficos rápidos",
+          ca: "Dades demogràfiques ràpides"
+        },
+        subtitle: {
+          en: "Helps us make sure GDG Girona is welcoming to everyone.",
+          es: "Nos ayuda a asegurar que GDG Girona sea un espacio abierto para todos.",
+          ca: "Ens ajuda a assegurar que GDG Girona sigui un espai obert per a tothom."
+        },
+        ageLabel: { en: "Age range", es: "Rango de edad", ca: "Franja d'edat" },
+        ages: ["< 20", "20–23", "24–27", "28–34", "35+"],
+        genderLabel: { en: "Gender", es: "Género", ca: "Gènere" },
+        genders: [
+          { value: "Woman", label: { en: "Woman", es: "Mujer", ca: "Dona" } },
+          { value: "Man", label: { en: "Man", es: "Hombre", ca: "Home" } },
+          { value: "Non-binary", label: { en: "Non-binary", es: "No binario", ca: "No binari" } },
+          { value: "Prefer not to say", label: { en: "Prefer not to say", es: "Prefiero no decirlo", ca: "Prefereixo no dir-ho" } },
+          { value: "Other", label: { en: "Self-describe", es: "Otro", ca: "Un altre" } }
+        ]
+      },
+      {
+        id: "giveaway_and_feedback",
+        stage: 3,
+        type: "closing",
+        isLast: true,
+        eyebrow: { en: "Q16 • €50 Giveaway", es: "P16 • Sorteo 50 €", ca: "P16 • Sorteig 50 €" },
+        title: {
+          en: "Enter the €50 Amazon Gift Card Draw",
+          es: "Entra en el sorteo de la tarjeta Amazon de 50 €",
+          ca: "Entra al sorteig de la targeta Amazon de 50 €"
+        },
+        subtitle: {
+          en: "Drop your email or social handle so we can contact you if you win (and let us know if you're open to future feedback).",
+          es: "Déjanos tu email o usuario para contactarte si ganas (y dinos si te gustaría darnos feedback en el futuro).",
+          ca: "Deixa'ns el teu correu o usuari per contactar-te si guanyes (i digues-nos si vols donar-nos feedback en el futur)."
+        },
+        feedbackLabel: {
+          en: "Open to quick feedback chats in the future?",
+          es: "¿Te gustaría ayudarnos con feedback en el futuro?",
+          ca: "T'agradaria ajudar-nos amb feedback en el futur?"
+        },
+        feedbackOptions: [
+          { value: "Yes, count me in", label: { en: "Yes, count me in", es: "Sí, contad conmigo", ca: "Sí, compteu amb mi" } },
+          { value: "Maybe occasionally", label: { en: "Maybe occasionally", es: "Quizás de vez en cuando", ca: "Potser de tant en tant" } },
+          { value: "Just the giveaway", label: { en: "Just the giveaway", es: "Solo el sorteo", ca: "Només el sorteig" } }
+        ],
+        contactLabel: {
+          en: "Email or LinkedIn / X / Instagram handle",
+          es: "Email o usuario de LinkedIn / X / Instagram",
+          ca: "Correu o usuari de LinkedIn / X / Instagram"
+        },
+        contactPlaceholder: {
+          en: "you@example.com or @handle",
+          es: "tu@email.com o @usuario",
+          ca: "tu@correu.com o @usuari"
+        }
+      }
+    ];
+
+    /**
+     * ============================================================================
+     * STATE & BUILDER ARCHETYPES
+     * ============================================================================
+     */
+    const STAGE_COLORS = ["#4285F4", "#EA4335", "#FBBC05", "#34A853"];
+    const STAGE_SOFTS = ["#EFF6FF", "#FEF2F2", "#FEFCE8", "#ECFDF5"];
+
+    const state = {
+      lang: "en",
+      screen: "welcome", // "welcome" | "survey" | "result"
+      currentIndex: 0,
+      direction: "forward",
+      answers: {
+        travel_motivation: [],
+        format_ranking: [
+          "Finish-in-one-session sprint",
+          "Starter-kit workshop",
+          "Industry deep-dive talks",
+          "Open networking & demos"
+        ],
+        cross_disciplinary_topics: [],
+        valuable_perks: [],
+        invite_friend_triggers: [],
+        tech_radar: [],
+        age_range: "",
+        gender: "",
+        future_feedback: "Yes, count me in",
+        contact_info: ""
+      },
+      otherFieldText: "",
+      otherGenderText: "",
+      validationMsg: "",
+      archetype: null
+    };
+
+    function getActiveQuestions() {
+      return QUESTIONS.filter(q => !q.condition || q.condition(state.answers));
+    }
+
+    function computeArchetype(ans, lang) {
+      const topFormat = (ans.format_ranking && ans.format_ranking[0]) || "";
+      const crossTopics = ans.cross_disciplinary_topics || [];
+      const startup = ans.entrepreneurship_interest || "";
+
+      const archetypes = {
+        shipper: {
+          name: { en: "The Weekend Shipper", es: "The Weekend Shipper", ca: "The Weekend Shipper" },
+          tagline: {
+            en: "Bias for action—you show up to leave with working code.",
+            es: "Orientado/a a la acción: vienes para salir con código funcionando.",
+            ca: "Orientat/da a l'acció: véns per sortir amb codi funcionant."
+          },
+          desc: {
+            en: "Sprints, hackathons, and cloud credits are your natural habitat. You learn fastest by deploying real prototypes and stress-testing them with peers.",
+            es: "Los sprints, hackathones y créditos cloud son tu hábitat natural. Aprendes más rápido desplegando prototipos reales.",
+            ca: "Els sprints, hackatons i crèdits cloud són el teu hàbitat natural. Aprens més ràpid desplegant prototips reals."
+          }
+        },
+        frontier: {
+          name: { en: "The Frontier Explorer", es: "The Frontier Explorer", ca: "The Frontier Explorer" },
+          tagline: {
+            en: "Drawn to the intersection where software meets science & design.",
+            es: "Te atrae la intersección donde el software se cruza con la ciencia y el diseño.",
+            ca: "T'atreu la intersecció on el programari es creua amb la ciència i el disseny."
+          },
+          desc: {
+            en: "You're not just chasing the latest framework—you care about neuroscience, space, biotech, or human-centered design, and how tech unlocks them.",
+            es: "No solo buscas el último framework: te interesa la neurociencia, el espacio, la biotecnología o el diseño, y cómo la tecnología los impulsa.",
+            ca: "No només busques l'últim framework: t'interessa la neurociència, l'espai, la biotecnologia o el disseny, i com la tecnologia els impulsa."
+          }
+        },
+        founder: {
+          name: { en: "The Ecosystem Builder", es: "The Ecosystem Builder", ca: "The Ecosystem Builder" },
+          tagline: {
+            en: "Connecting dots, people, and product ideas across Girona.",
+            es: "Conectando ideas, personas y proyectos en todo Girona.",
+            ca: "Connectant idees, persones i projectes arreu de Girona."
+          },
+          desc: {
+            en: "Whether launching a micro-SaaS or rallying classmates for MWC, you see technology as a vehicle to build real products and strong communities.",
+            es: "Ya sea lanzando un micro-SaaS o reuniendo compañeros para el MWC, ves la tecnología como el motor para crear productos reales.",
+            ca: "Ja sigui llançant un micro-SaaS o reunint companys per al MWC, veus la tecnologia com el motor per crear productes reals."
+          }
+        },
+        specialist: {
+          name: { en: "The Deep-Tech Specialist", es: "The Deep-Tech Specialist", ca: "The Deep-Tech Specialist" },
+          tagline: {
+            en: "Hungry for real-world architecture beyond university textbooks.",
+            es: "Con ganas de arquitectura real más allá de los apuntes de clase.",
+            ca: "Amb ganes d'arquitectura real més enllà dels apunts de classe."
+          },
+          desc: {
+            en: "You appreciate deep technical talks, modern infrastructure, and understanding how production systems actually run at scale.",
+            es: "Valoras las charlas técnicas profundas, la infraestructura moderna y entender cómo funcionan los sistemas en producción.",
+            ca: "Valores les xerrades tècniques profundes, la infraestructura moderna i entendre com funcionen els sistemes en producció."
+          }
+        }
+      };
+
+      let key = "specialist";
+      if (topFormat === "Finish-in-one-session sprint" || topFormat === "Starter-kit workshop") {
+        key = "shipper";
+      } else if (crossTopics.length >= 2 && !crossTopics.includes("Pure software/AI only")) {
+        key = "frontier";
+      } else if (startup.startsWith("Yes")) {
+        key = "founder";
+      }
+
+      return {
+        key,
+        name: archetypes[key].name[lang],
+        tagline: archetypes[key].tagline[lang],
+        desc: archetypes[key].desc[lang]
+      };
+    }
+
+    /**
+     * ============================================================================
+     * TOURIST SOUVENIR T-SHIRT STORY CARD GENERATOR (1080x1920 PNG)
+     * ============================================================================
+     */
+    function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight) {
+      const words = text.split(" ");
+      let line = "";
+      let currentY = y;
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + " ";
+        if (ctx.measureText(testLine).width > maxWidth && n > 0) {
+          ctx.fillText(line.trim(), x, currentY);
+          line = words[n] + " ";
+          currentY += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(line.trim(), x, currentY);
+      return currentY;
+    }
+
+    function drawTShirtSilhouette(ctx, cx, cy) {
+      ctx.save();
+      // Drop shadow for the tee
+      ctx.fillStyle = "#0F172A";
+      ctx.beginPath();
+      ctx.moveTo(cx - 170, cy - 220);
+      ctx.lineTo(cx - 330, cy - 130);
+      ctx.lineTo(cx - 270, cy - 20);
+      ctx.lineTo(cx - 185, cy - 65);
+      ctx.lineTo(cx - 185, cy + 280);
+      ctx.lineTo(cx + 205, cy + 280);
+      ctx.lineTo(cx + 205, cy - 65);
+      ctx.lineTo(cx + 290, cy - 20);
+      ctx.lineTo(cx + 350, cy - 130);
+      ctx.lineTo(cx + 190, cy - 220);
+      ctx.quadraticCurveTo(cx + 10, cy - 165, cx - 170, cy - 220);
+      ctx.closePath();
+      ctx.fill();
+
+      // Crisp White Tourist Tee Body
+      ctx.fillStyle = "#FFFFFF";
+      ctx.strokeStyle = "#0F172A";
+      ctx.lineWidth = 7;
+      ctx.beginPath();
+      ctx.moveTo(cx - 180, cy - 232);
+      ctx.lineTo(cx - 340, cy - 142);
+      ctx.lineTo(cx - 280, cy - 32);
+      ctx.lineTo(cx - 195, cy - 77);
+      ctx.lineTo(cx - 195, cy + 268);
+      ctx.lineTo(cx + 195, cy + 268);
+      ctx.lineTo(cx + 195, cy - 77);
+      ctx.lineTo(cx + 280, cy - 32);
+      ctx.lineTo(cx + 340, cy - 142);
+      ctx.lineTo(cx + 180, cy - 232);
+      ctx.quadraticCurveTo(cx, cy - 175, cx - 180, cy - 232);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Collar rib
+      ctx.beginPath();
+      ctx.arc(cx, cy - 232, 74, 0.12 * Math.PI, 0.88 * Math.PI);
+      ctx.stroke();
+
+      // Retro Google 4-color stripes across chest
+      const colors = ["#4285F4", "#EA4335", "#FBBC05", "#34A853"];
+      colors.forEach((col, i) => {
+        ctx.fillStyle = col;
+        ctx.fillRect(cx - 160, cy - 115 + i * 11, 320, 8);
+      });
+
+      // Tourist T-Shirt Slogan printed on the tee
+      ctx.fillStyle = "#0F172A";
+      ctx.textAlign = "center";
+      ctx.font = "800 32px 'Space Grotesk', sans-serif";
+      ctx.fillText("I WENT TO", cx, cy - 22);
+
+      ctx.fillStyle = "#EA4335";
+      ctx.font = "800 42px 'Space Grotesk', sans-serif";
+      ctx.fillText("GDG GIRONA", cx, cy + 28);
+
+      ctx.fillStyle = "#4285F4";
+      ctx.font = "800 42px 'Space Grotesk', sans-serif";
+      ctx.fillText("DEVFEST", cx, cy + 76);
+
+      ctx.fillStyle = "#0F172A";
+      ctx.font = "700 24px 'Plus Jakarta Sans', sans-serif";
+      ctx.fillText("AND ALL I GOT WAS", cx, cy + 128);
+      ctx.fillText("THIS DIGITAL T-SHIRT", cx, cy + 162);
+
+      // Little Google dots at bottom hem
+      colors.forEach((col, i) => {
+        ctx.fillStyle = col;
+        ctx.beginPath();
+        ctx.arc(cx - 36 + i * 24, cy + 215, 7, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.restore();
+    }
+
+    async function downloadTouristTeeCard() {
+      const arch = state.archetype;
+      if (!arch) return;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = 1080;
+      canvas.height = 1920;
+      const ctx = canvas.getContext("2d");
+
+      // Futuristic Grid Background
+      ctx.fillStyle = "#F8FAFC";
+      ctx.fillRect(0, 0, 1080, 1920);
+
+      ctx.strokeStyle = "rgba(66, 133, 244, 0.12)";
+      ctx.lineWidth = 2;
+      for (let x = 0; x <= 1080; x += 48) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 1920); ctx.stroke();
+      }
+      for (let y = 0; y <= 1920; y += 48) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1080, y); ctx.stroke();
+      }
+
+      // Top Header Pill
+      ctx.fillStyle = "#FFFFFF";
+      ctx.strokeStyle = "#0F172A";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.roundRect(230, 160, 620, 68, 34);
+      ctx.fill();
+      ctx.stroke();
+
+      const dotColors = ["#4285F4", "#EA4335", "#FBBC05", "#34A853"];
+      dotColors.forEach((c, idx) => {
+        ctx.fillStyle = c;
+        ctx.beginPath();
+        ctx.arc(285 + idx * 24, 194, 8, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.fillStyle = "#0F172A";
+      ctx.font = "800 26px 'JetBrains Mono', monospace";
+      ctx.textAlign = "left";
+      ctx.fillText("GDG GIRONA • CATALONIA", 395, 203);
+
+      // Draw the Souvenir Tourist T-Shirt in the center
+      drawTShirtSilhouette(ctx, 540, 640);
+
+      // Builder Archetype Card below the tee
+      ctx.fillStyle = "#0F172A";
+      ctx.beginPath();
+      ctx.roundRect(114, 1064, 870, 560, 36);
+      ctx.fill();
+
+      ctx.fillStyle = "#FFFFFF";
+      ctx.strokeStyle = "#0F172A";
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.roundRect(98, 1048, 870, 560, 36);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = "#EFF6FF";
+      ctx.beginPath();
+      ctx.roundRect(148, 1098, 330, 48, 24);
+      ctx.fill();
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      ctx.fillStyle = "#4285F4";
+      ctx.font = "800 21px 'JetBrains Mono', monospace";
+      ctx.fillText("BUILDER ARCHETYPE", 176, 1129);
+
+      ctx.fillStyle = "#0F172A";
+      ctx.font = "700 58px 'Space Grotesk', sans-serif";
+      ctx.fillText(arch.name, 148, 1225);
+
+      ctx.fillStyle = "#4285F4";
+      ctx.font = "700 30px 'Plus Jakarta Sans', sans-serif";
+      wrapCanvasText(ctx, arch.tagline, 148, 1290, 770, 42);
+
+      ctx.fillStyle = "#475569";
+      ctx.font = "500 28px 'Plus Jakarta Sans', sans-serif";
+      wrapCanvasText(ctx, arch.desc, 148, 1405, 770, 40);
+
+      // Footer URL
+      ctx.fillStyle = "#0F172A";
+      ctx.textAlign = "center";
+      ctx.font = "700 26px 'JetBrains Mono', monospace";
+      ctx.fillText("gdg.community.dev/gdg-girona", 540, 1730);
+
+      canvas.toBlob(async (blob) => {
+        const file = new File([blob], "gdg-girona-devfest-tee.png", { type: "image/png" });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              files: [file],
+              title: "GDG Girona DevFest",
+              text: `${UI[state.lang].shareCaption(arch.name)} ${GDG_CHAPTER_URL}`
+            });
+            return;
+          } catch (e) { /* Fallback to download */ }
+        }
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "gdg-girona-devfest-tee.png";
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+    }
+
+    /**
+     * ============================================================================
+     * RENDERING & INTERACTION ENGINE
+     * ============================================================================
+     */
+    const stageContainer = document.getElementById("stage-container");
+    const stepCounter = document.getElementById("step-counter");
+    const stageTrack = document.getElementById("stage-track");
+    const appFooter = document.getElementById("app-footer");
+    const btnBack = document.getElementById("btn-back");
+    const btnNext = document.getElementById("btn-next");
+
+    function setThemeAccent(stageIdx) {
+      const color = STAGE_COLORS[stageIdx] || STAGE_COLORS[0];
+      const soft = STAGE_SOFTS[stageIdx] || STAGE_SOFTS[0];
+      document.documentElement.style.setProperty("--active-accent", color);
+      document.documentElement.style.setProperty("--active-soft", soft);
+      btnNext.style.background = color;
+      btnNext.style.color = stageIdx === 2 ? "#0F172A" : "#FFFFFF";
+    }
+
+    function updateProgress(activeQuestions) {
+      const t = UI[state.lang];
+      const q = activeQuestions[state.currentIndex];
+      setThemeAccent(q.stage);
+
+      stepCounter.style.display = "block";
+      stageTrack.style.display = "grid";
+      stepCounter.textContent = `${state.currentIndex + 1} / ${activeQuestions.length}`;
+
+      [0, 1, 2, 3].forEach(idx => {
+        const seg = document.getElementById(`seg-${idx}`);
+        const lbl = document.getElementById(`seg-label-${idx}`);
+        const fill = document.getElementById(`fill-${idx}`);
+        lbl.textContent = t.stages[idx];
+        seg.classList.remove("active", "done");
+
+        const stageQs = activeQuestions.filter(item => item.stage === idx);
+        const pos = stageQs.findIndex(item => item.id === q.id);
+
+        if (idx < q.stage) {
+          seg.classList.add("done");
+          fill.style.width = "100%";
+        } else if (idx === q.stage) {
+          seg.classList.add("active");
+          const pct = Math.round(((pos + 1) / stageQs.length) * 100);
+          fill.style.width = `${pct}%`;
+        } else {
+          fill.style.width = "0%";
+        }
+      });
+
+      btnBack.textContent = t.backBtn;
+      btnBack.style.visibility = state.currentIndex === 0 ? "hidden" : "visible";
+      btnNext.textContent = q.isLast ? t.finishBtn : t.nextBtn;
+    }
+
+    function renderWelcome() {
+      const t = UI[state.lang];
+      stepCounter.style.display = "none";
+      stageTrack.style.display = "none";
+      appFooter.style.display = "none";
+
+      stageContainer.innerHTML = `
+        <div class="slide">
+          <div class="welcome-card">
+            <div class="welcome-stripe"></div>
+            <h1 class="welcome-title display-font">${t.welcomeTitle}</h1>
+            <p class="welcome-desc">${t.welcomeDesc}</p>
+            <button type="button" class="btn-primary" id="btn-start">${t.startBtn}</button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById("btn-start").addEventListener("click", () => {
+        state.screen = "survey";
+        state.currentIndex = 0;
+        render();
+      });
+    }
+
+    function renderQuestion() {
+      const lang = state.lang;
+      const t = UI[lang];
+      const activeQuestions = getActiveQuestions();
+      if (state.currentIndex >= activeQuestions.length) {
+        state.currentIndex = activeQuestions.length - 1;
+      }
+      const q = activeQuestions[state.currentIndex];
+
+      appFooter.style.display = "block";
+      updateProgress(activeQuestions);
+
+      let bodyHTML = "";
+      const keys = ["A", "B", "C", "D", "E", "F", "G"];
+
+      if (q.type === "single" || q.type === "single_with_other") {
+        const currentVal = state.answers[q.id];
+        bodyHTML = `<div class="options-grid">` + q.options.map((opt, idx) => {
+          const isSelected = currentVal === opt.value;
+          return `
+            <button type="button" class="option-card ${isSelected ? "selected" : ""}" data-val="${opt.value}">
+              <span class="option-emoji">${opt.emoji}</span>
+              <div class="option-text">
+                <div class="option-title">${opt.label[lang]}</div>
+                ${opt.desc ? `<div class="option-desc">${opt.desc[lang]}</div>` : ""}
+              </div>
+              <span class="option-key">${keys[idx]}</span>
+            </button>
+          `;
+        }).join("") + `</div>`;
+
+        if (q.type === "single_with_other" && currentVal === "Other") {
+          bodyHTML += `
+            <div style="margin-top: 12px;">
+              <input type="text" class="text-input" id="other-field-input" placeholder="${t.otherFieldPlaceholder}" value="${state.otherFieldText}" />
+            </div>
+          `;
+        }
+      } else if (q.type === "multi") {
+        const selectedArr = state.answers[q.id] || [];
+        bodyHTML = `<div class="options-grid">` + q.options.map((opt, idx) => {
+          const isSelected = selectedArr.includes(opt.value);
+          return `
+            <button type="button" class="option-card ${isSelected ? "selected" : ""}" data-val="${opt.value}">
+              <span class="option-emoji">${opt.emoji}</span>
+              <div class="option-text">
+                <div class="option-title">${opt.label[lang]}</div>
+                ${opt.desc ? `<div class="option-desc">${opt.desc[lang]}</div>` : ""}
+              </div>
+              <span class="option-key">${isSelected ? "✓" : keys[idx]}</span>
+            </button>
+          `;
+        }).join("") + `</div>`;
+      } else if (q.type === "rank") {
+        const currentOrder = state.answers[q.id] || q.items.map(i => i.value);
+        bodyHTML = `<div class="rank-list">` + currentOrder.map((val, idx) => {
+          const itemObj = q.items.find(i => i.value === val);
+          return `
+            <div class="rank-item ${idx === 0 ? "top-pick" : ""}">
+              <div class="rank-badge">#${idx + 1}</div>
+              <span class="option-emoji">${itemObj.emoji}</span>
+              <div class="option-text">
+                <div class="option-title">${itemObj.label[lang]}</div>
+                <div class="option-desc">${itemObj.desc[lang]}</div>
+              </div>
+              <div class="rank-controls">
+                <button type="button" class="rank-arrow" data-move="up" data-idx="${idx}" ${idx === 0 ? "disabled" : ""} aria-label="Move up">↑</button>
+                <button type="button" class="rank-arrow" data-move="down" data-idx="${idx}" ${idx === currentOrder.length - 1 ? "disabled" : ""} aria-label="Move down">↓</button>
+              </div>
+            </div>
+          `;
+        }).join("") + `</div><div class="tag-count" style="margin-top:10px;">${t.rankHint}</div>`;
+      } else if (q.type === "tags_translated") {
+        const selectedArr = state.answers[q.id] || [];
+        bodyHTML = `
+          <div class="tags-cloud">
+            ${q.tags.map(tagObj => {
+              const isSelected = selectedArr.includes(tagObj.value);
+              return `<button type="button" class="tag-pill ${isSelected ? "selected" : ""}" data-tag="${tagObj.value}">${isSelected ? "✓ " : ""}${tagObj.label[lang]}</button>`;
+            }).join("")}
+          </div>
+          <div class="tag-count">${t.selectedCount(selectedArr.length)}</div>
+        `;
+      } else if (q.type === "tags_raw") {
+        const selectedArr = state.answers[q.id] || [];
+        bodyHTML = `
+          <div class="tags-cloud">
+            ${q.tags.map(tag => {
+              const isSelected = selectedArr.includes(tag);
+              return `<button type="button" class="tag-pill ${isSelected ? "selected" : ""}" data-tag="${tag}">${isSelected ? "✓ " : ""}${tag}</button>`;
+            }).join("")}
+          </div>
+          <div class="tag-count">${t.selectedCount(selectedArr.length)}</div>
+        `;
+      } else if (q.type === "demographics") {
+        bodyHTML = `
+          <div class="demo-section">
+            <span class="demo-label">${q.ageLabel[lang]}</span>
+            <div class="mini-pills">
+              ${q.ages.map(age => `
+                <button type="button" class="mini-pill ${state.answers.age_range === age ? "selected" : ""}" data-age="${age}">${age}</button>
+              `).join("")}
+            </div>
+          </div>
+          <div class="demo-section">
+            <span class="demo-label">${q.genderLabel[lang]}</span>
+            <div class="mini-pills">
+              ${q.genders.map(g => `
+                <button type="button" class="mini-pill ${state.answers.gender === g.value ? "selected" : ""}" data-gender="${g.value}">${g.label[lang]}</button>
+              `).join("")}
+            </div>
+            ${state.answers.gender === "Other" ? `
+              <div style="margin-top: 12px;">
+                <input type="text" class="text-input" id="other-gender-input" placeholder="${t.otherGenderPlaceholder}" value="${state.otherGenderText}" />
+              </div>
+            ` : ""}
+          </div>
+        `;
+      } else if (q.type === "closing") {
+        bodyHTML = `
+          <div class="demo-section">
+            <span class="demo-label">${q.feedbackLabel[lang]}</span>
+            <div class="mini-pills">
+              ${q.feedbackOptions.map(opt => `
+                <button type="button" class="mini-pill ${state.answers.future_feedback === opt.value ? "selected" : ""}" data-fb="${opt.value}">${opt.label[lang]}</button>
+              `).join("")}
+            </div>
+          </div>
+          <div class="demo-section">
+            <span class="demo-label">${q.contactLabel[lang]}</span>
+            <input type="text" class="text-input" id="closing-contact-input" placeholder="${q.contactPlaceholder[lang]}" value="${state.answers.contact_info || ""}" />
+            ${state.validationMsg ? `<div class="input-error">${state.validationMsg}</div>` : ""}
+          </div>
+        `;
+      }
+
+      stageContainer.innerHTML = `
+        <div class="slide ${state.direction === "back" ? "back" : ""}">
+          <span class="q-eyebrow"><span class="q-eyebrow-dot"></span>${q.eyebrow[lang]}</span>
+          <h2 class="q-title">${q.title[lang]}</h2>
+          <p class="q-subtitle">${q.subtitle[lang]}</p>
+          ${bodyHTML}
+        </div>
+      `;
+
+      attachQuestionListeners(q);
+    }
+
+    function attachQuestionListeners(q) {
+      if (q.type === "single" || q.type === "single_with_other") {
+        document.querySelectorAll(".option-card").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const val = btn.getAttribute("data-val");
+            state.answers[q.id] = val;
+            if (q.type === "single_with_other" && val === "Other") {
+              render();
+              const inp = document.getElementById("other-field-input");
+              if (inp) inp.focus();
+              return;
+            }
+            render();
+            if (q.autoAdvance) setTimeout(() => goNext(), 230);
+          });
+        });
+
+        const otherInp = document.getElementById("other-field-input");
+        if (otherInp) {
+          otherInp.addEventListener("input", (e) => { state.otherFieldText = e.target.value; });
+        }
+      } else if (q.type === "multi") {
+        document.querySelectorAll(".option-card").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const val = btn.getAttribute("data-val");
+            let arr = state.answers[q.id] || [];
+            arr = arr.includes(val) ? arr.filter(i => i !== val) : [...arr, val];
+            state.answers[q.id] = arr;
+            render();
+          });
+        });
+      } else if (q.type === "rank") {
+        document.querySelectorAll(".rank-arrow").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const idx = parseInt(btn.getAttribute("data-idx"), 10);
+            const dir = btn.getAttribute("data-move");
+            const arr = [...state.answers[q.id]];
+            const swapWith = dir === "up" ? idx - 1 : idx + 1;
+            if (swapWith >= 0 && swapWith < arr.length) {
+              [arr[idx], arr[swapWith]] = [arr[swapWith], arr[idx]];
+              state.answers[q.id] = arr;
+              render();
+            }
+          });
+        });
+      } else if (q.type === "tags_translated" || q.type === "tags_raw") {
+        document.querySelectorAll(".tag-pill").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const tag = btn.getAttribute("data-tag");
+            let arr = state.answers[q.id] || [];
+            arr = arr.includes(tag) ? arr.filter(t => t !== tag) : [...arr, tag];
+            state.answers[q.id] = arr;
+            render();
+          });
+        });
+      } else if (q.type === "demographics") {
+        document.querySelectorAll("[data-age]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            state.answers.age_range = btn.getAttribute("data-age");
+            render();
+          });
+        });
+        document.querySelectorAll("[data-gender]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            state.answers.gender = btn.getAttribute("data-gender");
+            render();
+            if (state.answers.gender === "Other") {
+              const gInp = document.getElementById("other-gender-input");
+              if (gInp) gInp.focus();
+            }
+          });
+        });
+        const gInp = document.getElementById("other-gender-input");
+        if (gInp) {
+          gInp.addEventListener("input", (e) => { state.otherGenderText = e.target.value; });
+        }
+      } else if (q.type === "closing") {
+        document.querySelectorAll("[data-fb]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            state.answers.future_feedback = btn.getAttribute("data-fb");
+            render();
+          });
+        });
+        const cInp = document.getElementById("closing-contact-input");
+        if (cInp) {
+          cInp.focus();
+          cInp.addEventListener("input", (e) => {
+            state.answers.contact_info = e.target.value;
+            if (state.validationMsg) state.validationMsg = "";
+          });
+        }
+      }
+    }
+
+    async function renderResult() {
+      const lang = state.lang;
+      const t = UI[lang];
+      stepCounter.style.display = "none";
+      stageTrack.style.display = "none";
+      appFooter.style.display = "none";
+
+      const finalAnswers = { ...state.answers };
+      if (finalAnswers.field_of_study_work === "Other" && state.otherFieldText.trim()) {
+        finalAnswers.field_of_study_work = `Other: ${state.otherFieldText.trim()}`;
+      }
+      if (finalAnswers.gender === "Other" && state.otherGenderText.trim()) {
+        finalAnswers.gender = `Other: ${state.otherGenderText.trim()}`;
+      }
+
+      const arch = computeArchetype(finalAnswers, lang);
+      state.archetype = arch;
+
+      const payload = {
+        submittedAt: new Date().toISOString(),
+        language: lang,
+        archetype: arch.key,
+        answers: finalAnswers
+      };
+
+      stageContainer.innerHTML = `
+        <div class="slide">
+          <div class="result-card">
+            <div class="welcome-stripe"></div>
+            <span class="archetype-pill">${t.resultBadge}</span>
+            <h1 class="archetype-name">${arch.name}</h1>
+            <div class="archetype-tagline">${arch.tagline}</div>
+            <p class="archetype-desc">${arch.desc}</p>
+
+            <div class="giveaway-box">
+              <span>🎁</span>
+              <span>${t.giveawayNote}</span>
+            </div>
+
+            <div class="share-section">
+              <button type="button" class="btn-primary" id="btn-save-results">${t.saveResultsBtn}</button>
+              <div class="social-strip-label">${t.shareStripLabel}</div>
+              <div class="social-row">
+                <button type="button" class="social-btn" id="btn-share-linkedin">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3A2 2 0 0 1 21 5V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V5A2 2 0 0 1 5 3H19M18.5 18.5V13.2A3.26 3.26 0 0 0 15.24 9.94C14.39 9.94 13.4 10.46 12.92 11.24V10.13H10.13V18.5H12.92V13.57C12.92 12.8 13.54 12.17 14.31 12.17A1.4 1.4 0 0 1 15.71 13.57V18.5H18.5M6.88 8.56A1.68 1.68 0 0 0 8.56 6.88C8.56 5.95 7.81 5.19 6.88 5.19A1.69 1.69 0 0 0 5.19 6.88C5.19 7.81 5.95 8.56 6.88 8.56M8.27 18.5V10.13H5.5V18.5H8.27Z"/></svg>
+                  LinkedIn
+                </button>
+                <button type="button" class="social-btn" id="btn-share-x">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                  X
+                </button>
+                <button type="button" class="social-btn" id="btn-share-threads">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.586-1.308-.883-2.359-.89h-.029c-.844 0-1.992.232-2.721 1.32L7.734 7.847c.98-1.454 2.568-2.256 4.478-2.256h.044c3.194.02 5.097 1.975 5.287 5.388.108.046.216.094.321.142 1.49.7 2.58 1.761 3.154 3.07.797 1.82.871 4.79-1.548 7.158-1.85 1.81-4.094 2.628-7.277 2.65Zm1.003-11.69c-.242 0-.487.007-.739.021-1.836.103-2.98.946-2.916 2.143.067 1.256 1.452 1.839 2.784 1.767 1.224-.065 2.818-.543 3.086-3.71a10.5 10.5 0 0 0-2.215-.221Z"/></svg>
+                  Threads
+                </button>
+                <button type="button" class="social-btn" id="btn-copy-link">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  ${t.copyLinkBtn}
+                </button>
+              </div>
+              <div class="share-toast" id="share-toast"></div>
+            </div>
+            <div class="save-status" id="save-status">${t.savingDb}</div>
+          </div>
+          <div style="text-align:center;">
+            <button type="button" class="btn-secondary" id="btn-restart" style="font-size:13px; padding: 9px 14px;">${t.restartBtn}</button>
+          </div>
+        </div>
+      `;
+
+      const postCaption = t.shareCaption(arch.name);
+      const toastEl = document.getElementById("share-toast");
+
+      document.getElementById("btn-save-results").addEventListener("click", downloadTouristTeeCard);
+
+      document.getElementById("btn-share-linkedin").addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(`${postCaption} ${GDG_CHAPTER_URL}`);
+          toastEl.textContent = t.copiedLiToast;
+        } catch (e) {}
+        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(GDG_CHAPTER_URL)}`, "_blank", "noopener,noreferrer");
+      });
+
+      document.getElementById("btn-share-x").addEventListener("click", () => {
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(postCaption)}&url=${encodeURIComponent(GDG_CHAPTER_URL)}`, "_blank", "noopener,noreferrer");
+      });
+
+      document.getElementById("btn-share-threads").addEventListener("click", () => {
+        const full = `${postCaption} ${GDG_CHAPTER_URL}`;
+        window.open(`https://www.threads.net/intent/post?text=${encodeURIComponent(full)}`, "_blank", "noopener,noreferrer");
+      });
+
+      document.getElementById("btn-copy-link").addEventListener("click", async () => {
+        await navigator.clipboard.writeText(GDG_CHAPTER_URL);
+        const btn = document.getElementById("btn-copy-link");
+        const orig = btn.innerHTML;
+        btn.textContent = t.copiedBtn;
+        toastEl.textContent = t.copiedLinkToast;
+        setTimeout(() => {
+          btn.innerHTML = orig;
+          toastEl.textContent = "";
+        }, 2200);
+      });
+
+      document.getElementById("btn-restart").addEventListener("click", () => {
+        state.screen = "welcome";
+        state.currentIndex = 0;
+        state.answers = {
+          travel_motivation: [],
+          format_ranking: [
+            "Finish-in-one-session sprint",
+            "Starter-kit workshop",
+            "Industry deep-dive talks",
+            "Open networking & demos"
+          ],
+          cross_disciplinary_topics: [],
+          valuable_perks: [],
+          invite_friend_triggers: [],
+          tech_radar: [],
+          age_range: "",
+          gender: "",
+          future_feedback: "Yes, count me in",
+          contact_info: ""
+        };
+        state.otherFieldText = "";
+        state.otherGenderText = "";
+        state.validationMsg = "";
+        render();
+      });
+
+      const res = await submitSurveyData(payload);
+      const statusEl = document.getElementById("save-status");
+      if (statusEl) {
+        statusEl.textContent = res.ok ? t.savedDb : t.errorDb;
+      }
+    }
+
+    function goNext() {
+      const activeQuestions = getActiveQuestions();
+      const q = activeQuestions[state.currentIndex];
+
+      if (q && q.type === "closing") {
+        if (!state.answers.contact_info || !state.answers.contact_info.trim()) {
+          state.validationMsg = UI[state.lang].contactRequiredErr;
+          render();
+          return;
+        }
+      }
+
+      if (state.currentIndex < activeQuestions.length - 1) {
+        state.direction = "forward";
+        state.currentIndex++;
+        render();
+      } else {
+        state.screen = "result";
+        render();
+      }
+    }
+
+    function goBack() {
+      if (state.currentIndex > 0) {
+        state.direction = "back";
+        state.currentIndex--;
+        render();
+      }
+    }
+
+    function render() {
+      if (state.screen === "welcome") renderWelcome();
+      else if (state.screen === "survey") renderQuestion();
+      else if (state.screen === "result") renderResult();
+    }
+
+    // Language Switcher
+    document.querySelectorAll(".lang-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        state.lang = btn.getAttribute("data-lang");
+        document.querySelectorAll(".lang-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        render();
+      });
+    });
+
+    btnNext.addEventListener("click", goNext);
+    btnBack.addEventListener("click", goBack);
+
+    document.addEventListener("keydown", (e) => {
+      if (state.screen !== "survey") return;
+      if (document.activeElement && document.activeElement.tagName === "INPUT") {
+        if (e.key === "Enter") { e.preventDefault(); goNext(); }
+        return;
+      }
+      if (e.key === "Enter") { e.preventDefault(); goNext(); }
+
+      const activeQuestions = getActiveQuestions();
+      const q = activeQuestions[state.currentIndex];
+      const letterIdx = ["A", "B", "C", "D", "E", "F", "G"].indexOf(e.key.toUpperCase());
+      if (letterIdx !== -1 && q.options && q.options[letterIdx]) {
+        const cards = document.querySelectorAll(".option-card");
+        if (cards[letterIdx]) cards[letterIdx].click();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
